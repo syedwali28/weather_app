@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Weather App</h1>
+        
+        <div class="input-container">
+            <label for="city">Enter city name:</label>
+            <input type="text" id="city" name="city" placeholder="e.g. London" required>
+            <button id="get-weather">Get Weather</button>
+        </div>
+        
+        <div id="weather-result" class="result">
+            <p id="weather-info"></p>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#get-weather').on('click', function() {
+                const city = $('#city').val();
+                
+                if (!city) {
+                    alert('Please enter a city name.');
+                    return;
+                }
+
+                $.ajax({
+                    url: '/weather',
+                    method: 'POST',
+                    data: { city: city },
+                    success: function(response) {
+                        if (response.error) {
+                            $('#weather-info').html('City not found.');
+                        } else {
+                            $('#weather-info').html(
+                                `City: ${response.city}<br>` +
+                                `Temperature: ${response.temperature}°C<br>` +
+                                `Description: ${response.description}<br>` +
+                                `Humidity: ${response.humidity}%<br>` +
+                                `Wind Speed: ${response.wind_speed} m/s`
+                            );
+                        }
+                    },
+                    error: function() {
+                        $('#weather-info').html('Error fetching weather data.');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
